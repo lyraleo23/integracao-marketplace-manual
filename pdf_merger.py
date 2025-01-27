@@ -10,7 +10,6 @@ def pdf_merger(prescription, receipt):
         input_files = [prescription, receipt]
     elif output_file in os.listdir():
         input_files = [output_file, prescription, receipt]
-    print(input_files)
 
     merger = PdfWriter()
 
