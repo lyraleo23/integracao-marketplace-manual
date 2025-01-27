@@ -30,7 +30,7 @@ def download_links_manual():
         prescription_pdf_url = row[prescription_pdf_column]
         receipt_link_url = row[receipt_link_column]
 
-        if prescription_pdf_url == '' or receipt_link_url == '':
+        if pd.isna(prescription_pdf_url) or pd.isna(receipt_link_url):
             continue
 
         prescription = os.path.join(download_dir, f'prescription_{index}.pdf')
@@ -38,15 +38,16 @@ def download_links_manual():
 
         # Download the files
         if prescription_pdf_url != '':
+            print(prescription_pdf_url)
             while True:
                 if pd.notna(prescription_pdf_url):
                     download_file(prescription_pdf_url, prescription)
-
                     break
         else:
             continue
 
         if receipt_link_url != '':
+            print(receipt_link_url)
             while True:
                 if pd.notna(receipt_link_url):
                     download_file(receipt_link_url, receipt)
