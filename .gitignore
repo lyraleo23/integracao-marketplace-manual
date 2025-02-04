@@ -1,9 +1,10 @@
 __pycache__
-downloads/
+downloads/*
+output/*
 .env
 download_list.xlsx
 download_list_backup.xlsx
 download_list_reordered.xlsx
-pedidos_manual.xlsx
 vsm-json-sample.json
 print_file.pdf
+lista_pedidos_manual.json
