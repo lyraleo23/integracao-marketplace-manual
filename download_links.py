@@ -4,14 +4,14 @@ import os
 import time
 from pdf_merger import pdf_merger
 from reorder_patients import reorder_patients_by_name, reorder_patients_by_tiny_number
+from fpdf import FPDF
 
 def download_links_manual():
     # Define the path to the Excel file
-    excel_file_path_in = 'download_list.xlsx'
-    excel_file_path_out  = 'download_list_reordered.xlsx'
+    excel_file_path_in = '.\output\download_list.xlsx'
+    excel_file_path_out  = '.\output\download_list_reordered.xlsx'
 
     # Reordena o arquivo de excel em ordem alfabética
-    # reorder_patients_by_name(excel_file_path_in, excel_file_path_out)
     reorder_patients_by_tiny_number(excel_file_path_in, excel_file_path_out)
 
     # Read the Excel file
@@ -20,6 +20,9 @@ def download_links_manual():
     # Define the columns containing the URLs
     prescription_pdf_column = 'Prescription PDF'
     receipt_link_column = 'Receipt Link'
+    cpf_column = 'CPF'
+    date_column = 'data_pedido'
+    tiny_column = 'Tiny'
 
     # Create a directory to save the downloaded files
     download_dir = 'downloads'
@@ -29,31 +32,45 @@ def download_links_manual():
     for index, row in df.iterrows():
         prescription_pdf_url = row[prescription_pdf_column]
         receipt_link_url = row[receipt_link_column]
+        cpf = row[cpf_column]
+        order_number = row[tiny_column]
 
-        if pd.isna(prescription_pdf_url) or pd.isna(receipt_link_url):
-            continue
+        # Create a directory to save files from the given date
+        date = row[date_column]
+        date = date.split('/')
+        date = f'{date[2]}-{date[1]}-{date[0]}'
+        date_dir = os.path.join(download_dir, date)
+        os.makedirs(date_dir, exist_ok=True)
+        
+        # Path and name for the files to be downloaded
+        prescription = os.path.join(download_dir, f'{cpf}_{order_number}_prescription_{index}.pdf')
+        receipt = os.path.join(download_dir, f'{cpf}_{order_number}_receipt_{index}.pdf')
 
-        prescription = os.path.join(download_dir, f'prescription_{index}.pdf')
-        receipt = os.path.join(download_dir, f'receipt_{index}.pdf')
-
-        # Download the files
-        if prescription_pdf_url != '':
-            print(prescription_pdf_url)
+        # Download the Prescription file
+        if pd.notna(prescription_pdf_url):
             while True:
-                if pd.notna(prescription_pdf_url):
-                    download_file(prescription_pdf_url, prescription)
-                    break
+                download_file(prescription_pdf_url, prescription)
+                break
         else:
-            continue
+            # If the prescription PDF URL is missing, create a blank PDF
+            if pd.isna(prescription_pdf_url):
+                pdf = FPDF()
+                pdf.add_page()
+                pdf.output(prescription)
+                print(f"Created blank PDF: {prescription}")
 
-        if receipt_link_url != '':
-            print(receipt_link_url)
+        # Download the Receipt file
+        if pd.notna(receipt_link_url):
             while True:
-                if pd.notna(receipt_link_url):
-                    download_file(receipt_link_url, receipt)
-                    break
+                download_file(receipt_link_url, receipt)
+                break
         else:
-            continue
+            # If the receipt PDF URL is missing, create a blank PDF
+            if pd.isna(receipt_link_url):
+                pdf = FPDF()
+                pdf.add_page()
+                pdf.output(receipt)
+                print(f"Created blank PDF: {receipt}")
 
         # Merge the downloaded PDF files
         try:
