@@ -2,8 +2,8 @@ import pandas as pd
 import requests
 import os
 import time
-from pdf_merger import pdf_merger
-from reorder_patients import reorder_patients_by_name, reorder_patients_by_tiny_number
+from pdf_merger import pdf_merger, pdf_merger_receipt
+from reorder_patients import reorder_patients_by_tiny_number
 from fpdf import FPDF
 
 def download_links_manual():
@@ -25,7 +25,7 @@ def download_links_manual():
     tiny_column = 'Tiny'
 
     # Create a directory to save the downloaded files
-    download_dir = 'downloads'
+    download_dir = 'downloads_receitas_manual'
     os.makedirs(download_dir, exist_ok=True)
 
     # Iterate over the rows in the DataFrame and download the files
@@ -43,8 +43,8 @@ def download_links_manual():
         os.makedirs(date_dir, exist_ok=True)
         
         # Path and name for the files to be downloaded
-        prescription = os.path.join(download_dir, f'{cpf}_{order_number}_prescription_{index}.pdf')
-        receipt = os.path.join(download_dir, f'{cpf}_{order_number}_receipt_{index}.pdf')
+        prescription = os.path.join(date_dir, f'{cpf}_{order_number}_prescription_{index}.pdf')
+        receipt = os.path.join(date_dir, f'{cpf}_{order_number}_receipt_{index}.pdf')
 
         # Download the Prescription file
         if pd.notna(prescription_pdf_url):
@@ -74,7 +74,8 @@ def download_links_manual():
 
         # Merge the downloaded PDF files
         try:
-            pdf_merger(prescription, receipt)
+            # pdf_merger(prescription, receipt)
+            pdf_merger_receipt(receipt)
         except Exception as e:
             print(f"Error merging PDF files {index}: {e}")
     

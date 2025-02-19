@@ -1,5 +1,6 @@
 __pycache__
 downloads/*
+downloads_receitas_manual/*
 output/*
 .env
 download_list.xlsx

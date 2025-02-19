@@ -26,8 +26,8 @@ def main():
 
     while len(lista_pedidos_manual) == 0:
         year = '2025'
-        month = '02'
-        day = '04'
+        month = '01'
+        day = '15'
         lista_pedidos_manual = obter_pedidos(TOKEN_MANUAL, year, month, day)
 
         # Salva o arquivo json da requisição
@@ -84,7 +84,6 @@ def main():
                     break
                 except:
                     print(f"Tentando novamente pesquisar produto... pedido {pedido_manual['Order ID']}")
-                    print(pesquisa)
 
             item = {
                 'item' :{
@@ -161,7 +160,6 @@ def main():
                     # Cria o pedido na Tiny
                     try:
                         response = incluir_pedido(TOKEN_TINY, pedido)
-                        print(response)
                         response = response['retorno']['registros']['registro']
 
                         if response['erros']:
@@ -169,9 +167,9 @@ def main():
                             if response['erros'][0]['erro'] == 'Registro em duplicidade - Pedido de Venda já cadastrado':
                                 break
 
-                        for item in itens_tiny:
-                            codigo_sku = item['item']['descricao'][:7]
-                            print(codigo_sku)
+                        # for item in itens_tiny:
+                        #     codigo_sku = item['item']['descricao'][:7]
+                        #     print(codigo_sku)
                         break
                     except Exception as e:
                         print(f'Erro na inclusao do pedido: {e}')
@@ -188,7 +186,6 @@ def main():
             except Exception as e:
                 print(f"Tentando novamente... pedido {pedido_manual['Order ID']}")
                 print(e)
-                print(pedido)
                 time.sleep(2)
 
     df2 = pd.DataFrame(download_list)
